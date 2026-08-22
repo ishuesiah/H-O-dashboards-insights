@@ -62,7 +62,17 @@ export default function Dashboard({ onLogout }) {
           <>
             {/* Referral Program Section */}
             <section className="mb-8">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Referral Program</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Referral Program
+                <a
+                  href="https://referral-program-448vr.kinsta.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-2 text-sm font-normal text-indigo-600 hover:text-indigo-800"
+                >
+                  Open Dashboard →
+                </a>
+              </h2>
               <ReferralStats data={data.referral} />
             </section>
 
@@ -74,11 +84,13 @@ export default function Dashboard({ onLogout }) {
                   title="Address Issues"
                   data={data.addressWebhook}
                   colorScheme="amber"
+                  dashboardUrl="https://address-issue-webhook-bufx1.kinsta.app/"
                 />
                 <WebhookStats
                   title="Customizations"
                   data={data.customizationWebhook}
                   colorScheme="purple"
+                  dashboardUrl="https://customization-webhook-b6ou1.kinsta.app/"
                 />
               </div>
             </section>

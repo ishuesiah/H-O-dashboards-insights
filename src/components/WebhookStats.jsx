@@ -1,4 +1,4 @@
-export default function WebhookStats({ title, data, colorScheme = 'indigo' }) {
+export default function WebhookStats({ title, data, colorScheme = 'indigo', dashboardUrl }) {
   if (data?.error) {
     return (
       <div className="bg-white rounded-lg shadow p-6">
@@ -54,7 +54,19 @@ export default function WebhookStats({ title, data, colorScheme = 'indigo' }) {
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-sm font-medium text-gray-900 mb-4">{title}</h3>
+      <h3 className="text-sm font-medium text-gray-900 mb-4">
+        {title}
+        {dashboardUrl && (
+          <a
+            href={dashboardUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-2 text-xs font-normal text-indigo-600 hover:text-indigo-800"
+          >
+            Open →
+          </a>
+        )}
+      </h3>
 
       {isAddressWebhook && (
         <div className="space-y-4">
