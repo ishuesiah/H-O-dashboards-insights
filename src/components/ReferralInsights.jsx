@@ -138,8 +138,8 @@ export default function ReferralInsights({ stats, recentActivity, trends }) {
 
       case 'points':
         return (
-          <div className="h-72">
-            <div className="grid grid-cols-3 gap-4 h-full">
+          <div className="space-y-4">
+            <div className="grid grid-cols-3 gap-4">
               {pointsReferralsData.map((item, i) => (
                 <div key={i} className="bg-ho-cream border-l-4 border-ho-forest p-6 flex flex-col items-center justify-center">
                   <div className="text-4xl font-light text-ho-forest">{item.value.toLocaleString()}</div>
@@ -147,7 +147,7 @@ export default function ReferralInsights({ stats, recentActivity, trends }) {
                 </div>
               ))}
             </div>
-            <div className="mt-4 bg-ho-tan/30 p-4">
+            <div className="bg-ho-tan/30 p-4">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-ho-charcoal">Total Points in Circulation</span>
                 <span className="text-2xl font-light text-ho-forest">{(stats?.totalPoints || 0).toLocaleString()}</span>
