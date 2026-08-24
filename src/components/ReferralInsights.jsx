@@ -66,12 +66,15 @@ export default function ReferralInsights({ stats, recentActivity, trends }) {
   ]
 
   // Weekly trends data from API
-  const trendsData = (trends || []).map(day => ({
-    name: day.dayName,
-    signups: day.signups || 0,
-    referrals: day.referrals || 0,
-    points: day.points || 0
-  }))
+  const trendsData = (trends || []).map(day => {
+    const date = new Date(day.date)
+    return {
+      name: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      signups: day.signups || 0,
+      referrals: day.referrals || 0,
+      points: day.points || 0
+    }
+  })
 
   const renderChart = () => {
     switch (activeTab) {
