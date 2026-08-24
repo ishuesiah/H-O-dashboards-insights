@@ -89,7 +89,12 @@ export default function ReferralInsights({ stats, recentActivity }) {
                   outerRadius={100}
                   paddingAngle={2}
                   dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  label={({ name, percent }) => {
+                    const pct = percent * 100
+                    if (pct < 0.1) return `${name} <0.1%`
+                    if (pct < 1) return `${name} ${pct.toFixed(1)}%`
+                    return `${name} ${pct.toFixed(0)}%`
+                  }}
                 >
                   {tierData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
@@ -146,6 +151,12 @@ export default function ReferralInsights({ stats, recentActivity }) {
         )
 
       case 'conversion':
+        const formatPercent = (pct) => {
+          if (pct < 0.01) return '<0.01%'
+          if (pct < 0.1) return `${pct.toFixed(2)}%`
+          if (pct < 1) return `${pct.toFixed(1)}%`
+          return `${pct.toFixed(1)}%`
+        }
         return (
           <div className="h-72 flex flex-col justify-center space-y-4">
             {conversionData.map((stage, i) => {
@@ -162,7 +173,7 @@ export default function ReferralInsights({ stats, recentActivity }) {
                       style={{ width: `${Math.max(widthPercent, 10)}%`, backgroundColor: stage.fill }}
                     >
                       <span className="text-white text-sm font-medium">
-                        {widthPercent.toFixed(1)}%
+                        {formatPercent(widthPercent)}
                       </span>
                     </div>
                   </div>
@@ -171,7 +182,7 @@ export default function ReferralInsights({ stats, recentActivity }) {
             })}
             <div className="mt-4 p-4 bg-blue-50 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>Conversion Rate:</strong> {totalUsers > 0 ? ((totalReferrals / totalUsers) * 100).toFixed(1) : 0}% of users have successful referrals
+                <strong>Conversion Rate:</strong> {totalUsers > 0 ? formatPercent((totalReferrals / totalUsers) * 100) : '0%'} of users have successful referrals
               </p>
             </div>
           </div>
