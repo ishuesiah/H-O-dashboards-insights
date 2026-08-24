@@ -17,10 +17,18 @@ export default async function handler(req, res) {
   const webhookApiKey = process.env.WEBHOOK_API_KEY;
   const referralSecret = process.env.REFERRAL_API_SECRET;
 
-  // Fetch from all three sources in parallel
-  const [referral, addressWebhook, customizationWebhook] = await Promise.allSettled([
-    // Referral Program
+  // Fetch from all sources in parallel
+  const [referral, referralTrends, addressWebhook, customizationWebhook] = await Promise.allSettled([
+    // Referral Program Stats
     fetch(`${process.env.REFERRAL_API_URL}/api/dashboard/stats?secret=${referralSecret}`, {
+      headers: { 'X-Dashboard-Secret': referralSecret }
+    }).then(r => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
+    }),
+
+    // Referral Program Trends (last 7 days)
+    fetch(`${process.env.REFERRAL_API_URL}/api/dashboard/trends?secret=${referralSecret}&days=7`, {
       headers: { 'X-Dashboard-Secret': referralSecret }
     }).then(r => {
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -44,11 +52,17 @@ export default async function handler(req, res) {
     })
   ]);
 
+  // Merge referral stats and trends
+  const referralData = referral.status === 'fulfilled'
+    ? {
+        ...referral.value,
+        trends: referralTrends.status === 'fulfilled' ? referralTrends.value.trends : []
+      }
+    : { error: referral.reason?.message || 'Failed to fetch' };
+
   return res.status(200).json({
     timestamp: new Date().toISOString(),
-    referral: referral.status === 'fulfilled'
-      ? referral.value
-      : { error: referral.reason?.message || 'Failed to fetch' },
+    referral: referralData,
     addressWebhook: addressWebhook.status === 'fulfilled'
       ? addressWebhook.value
       : { error: addressWebhook.reason?.message || 'Failed to fetch' },

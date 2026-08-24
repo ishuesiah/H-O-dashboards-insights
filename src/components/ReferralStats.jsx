@@ -18,7 +18,7 @@ export default function ReferralStats({ data }) {
     )
   }
 
-  const { stats, recentActivity } = data
+  const { stats, recentActivity, trends } = data
 
   return (
     <div className="space-y-6">
@@ -49,7 +49,7 @@ export default function ReferralStats({ data }) {
       </div>
 
       {/* Program Insights */}
-      <ReferralInsights stats={stats} recentActivity={recentActivity} />
+      <ReferralInsights stats={stats} recentActivity={recentActivity} trends={trends} />
 
     </div>
   )

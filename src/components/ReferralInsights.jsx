@@ -21,7 +21,7 @@ const TABS = [
   { id: 'trends', label: 'Weekly Trends' }
 ]
 
-export default function ReferralInsights({ stats, recentActivity }) {
+export default function ReferralInsights({ stats, recentActivity, trends }) {
   const [activeTab, setActiveTab] = useState('tiers')
 
   const tiers = stats?.tiers || {}
@@ -65,13 +65,12 @@ export default function ReferralInsights({ stats, recentActivity }) {
     { stage: 'Successful Referrals', value: totalReferrals, fill: '#10b981' }
   ]
 
-  // Weekly trends (simulated from activity data)
-  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-  const trendsData = days.map((day, i) => ({
-    name: day,
-    signups: Math.floor(Math.random() * 20) + 5,
-    referrals: Math.floor(Math.random() * 15) + 2,
-    points: Math.floor(Math.random() * 500) + 100
+  // Weekly trends data from API
+  const trendsData = (trends || []).map(day => ({
+    name: day.dayName,
+    signups: day.signups || 0,
+    referrals: day.referrals || 0,
+    points: day.points || 0
   }))
 
   const renderChart = () => {
@@ -202,7 +201,9 @@ export default function ReferralInsights({ stats, recentActivity }) {
                 <Area type="monotone" dataKey="referrals" name="Referrals" stroke="#10b981" fill="#a7f3d0" />
               </AreaChart>
             </ResponsiveContainer>
-            <p className="text-xs text-gray-400 text-center mt-2">* Sample trend data - connect to analytics API for real data</p>
+{trendsData.length === 0 && (
+              <p className="text-xs text-gray-400 text-center mt-2">No trend data available</p>
+            )}
           </div>
         )
 
