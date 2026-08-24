@@ -6,11 +6,21 @@ import {
   CartesianGrid
 } from 'recharts'
 
+// Hemlock & Oak brand colors
+const HO_COLORS = {
+  forest: '#293e1c',
+  bronze: '#a47738',
+  burgundy: '#711d2f',
+  tan: '#d4c5a9',
+  charcoal: '#1a1a1a',
+  cream: '#f4f4f2'
+}
+
 const TIER_COLORS = {
-  Bronze: '#b45309',
+  Bronze: HO_COLORS.bronze,
   Silver: '#6b7280',
-  Gold: '#eab308',
-  VIP: '#9333ea'
+  Gold: '#d4a84b',
+  VIP: HO_COLORS.burgundy
 }
 
 const TABS = [
@@ -60,9 +70,9 @@ export default function ReferralInsights({ stats, recentActivity, trends }) {
   const totalUsers = stats?.totalUsers || 0
   const usersWithReferrals = stats?.usersWithReferrals || stats?.referrers || Math.round(totalUsers * 0.3)
   const conversionData = [
-    { stage: 'Total Users', value: totalUsers, fill: '#6366f1' },
-    { stage: 'Made Referrals', value: usersWithReferrals, fill: '#8b5cf6' },
-    { stage: 'Successful Referrals', value: totalReferrals, fill: '#10b981' }
+    { stage: 'Total Users', value: totalUsers, fill: HO_COLORS.forest },
+    { stage: 'Made Referrals', value: usersWithReferrals, fill: HO_COLORS.bronze },
+    { stage: 'Successful Referrals', value: totalReferrals, fill: HO_COLORS.burgundy }
   ]
 
   // Weekly trends data from API
@@ -119,8 +129,8 @@ export default function ReferralInsights({ stats, recentActivity, trends }) {
                 <YAxis type="category" dataKey="name" tick={{ fontSize: 12 }} />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="count" name="Actions" fill="#6366f1" />
-                <Bar dataKey="points" name="Points" fill="#10b981" />
+                <Bar dataKey="count" name="Actions" fill={HO_COLORS.forest} />
+                <Bar dataKey="points" name="Points" fill={HO_COLORS.bronze} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -131,20 +141,20 @@ export default function ReferralInsights({ stats, recentActivity, trends }) {
           <div className="h-72">
             <div className="grid grid-cols-3 gap-4 h-full">
               {pointsReferralsData.map((item, i) => (
-                <div key={i} className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg p-6 flex flex-col items-center justify-center">
-                  <div className="text-4xl font-bold text-indigo-600">{item.value.toLocaleString()}</div>
-                  <div className="text-sm text-gray-600 mt-2">{item.name}</div>
+                <div key={i} className="bg-ho-cream border-l-4 border-ho-forest p-6 flex flex-col items-center justify-center">
+                  <div className="text-4xl font-light text-ho-forest">{item.value.toLocaleString()}</div>
+                  <div className="text-sm text-ho-charcoal mt-2">{item.name}</div>
                 </div>
               ))}
             </div>
-            <div className="mt-4 bg-gray-50 rounded-lg p-4">
+            <div className="mt-4 bg-ho-tan/30 p-4">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Total Points in Circulation</span>
-                <span className="text-2xl font-bold text-green-600">{(stats?.totalPoints || 0).toLocaleString()}</span>
+                <span className="text-sm text-ho-charcoal">Total Points in Circulation</span>
+                <span className="text-2xl font-light text-ho-forest">{(stats?.totalPoints || 0).toLocaleString()}</span>
               </div>
-              <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+              <div className="mt-2 w-full bg-ho-tan h-2">
                 <div
-                  className="bg-green-500 h-2 rounded-full transition-all"
+                  className="bg-ho-forest h-2 transition-all"
                   style={{ width: `${Math.min(100, ((stats?.totalPoints || 0) / 100000) * 100)}%` }}
                 />
               </div>
@@ -166,12 +176,12 @@ export default function ReferralInsights({ stats, recentActivity, trends }) {
               return (
                 <div key={i} className="relative">
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-700 font-medium">{stage.stage}</span>
-                    <span className="text-gray-600">{stage.value.toLocaleString()}</span>
+                    <span className="text-ho-charcoal font-medium">{stage.stage}</span>
+                    <span className="text-ho-charcoal">{stage.value.toLocaleString()}</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-8">
+                  <div className="w-full bg-ho-tan h-8">
                     <div
-                      className="h-8 rounded-full transition-all flex items-center justify-end pr-3"
+                      className="h-8 transition-all flex items-center justify-end pr-3"
                       style={{ width: `${Math.max(widthPercent, 10)}%`, backgroundColor: stage.fill }}
                     >
                       <span className="text-white text-sm font-medium">
@@ -182,8 +192,8 @@ export default function ReferralInsights({ stats, recentActivity, trends }) {
                 </div>
               )
             })}
-            <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-blue-800">
+            <div className="mt-4 p-4 bg-ho-forest/10 border-l-4 border-ho-forest">
+              <p className="text-sm text-ho-charcoal">
                 <strong>Conversion Rate:</strong> {totalUsers > 0 ? formatPercent((totalReferrals / totalUsers) * 100) : '0%'} of users have successful referrals
               </p>
             </div>
@@ -200,12 +210,12 @@ export default function ReferralInsights({ stats, recentActivity, trends }) {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Area type="monotone" dataKey="signups" name="Signups" stroke="#6366f1" fill="#c7d2fe" />
-                <Area type="monotone" dataKey="referrals" name="Referrals" stroke="#10b981" fill="#a7f3d0" />
+                <Area type="monotone" dataKey="signups" name="Signups" stroke={HO_COLORS.forest} fill={`${HO_COLORS.forest}40`} />
+                <Area type="monotone" dataKey="referrals" name="Referrals" stroke={HO_COLORS.bronze} fill={`${HO_COLORS.bronze}40`} />
               </AreaChart>
             </ResponsiveContainer>
 {trendsData.length === 0 && (
-              <p className="text-xs text-gray-400 text-center mt-2">No trend data available</p>
+              <p className="text-xs text-ho-charcoal/50 text-center mt-2">No trend data available</p>
             )}
           </div>
         )
@@ -216,11 +226,11 @@ export default function ReferralInsights({ stats, recentActivity, trends }) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-sm font-medium text-gray-900 mb-4">Program Insights</h3>
+    <div className="bg-white shadow-sm p-6">
+      <h3 className="text-sm font-medium text-ho-charcoal mb-4">Program Insights</h3>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 mb-6">
+      <div className="border-b border-ho-tan mb-6">
         <nav className="flex space-x-4 overflow-x-auto" aria-label="Tabs">
           {TABS.map(tab => (
             <button
@@ -228,8 +238,8 @@ export default function ReferralInsights({ stats, recentActivity, trends }) {
               onClick={() => setActiveTab(tab.id)}
               className={`whitespace-nowrap py-2 px-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === tab.id
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-ho-forest text-ho-forest'
+                  : 'border-transparent text-ho-charcoal/60 hover:text-ho-charcoal hover:border-ho-tan'
               }`}
             >
               {tab.label}

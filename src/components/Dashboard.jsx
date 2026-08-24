@@ -19,18 +19,18 @@ export default function Dashboard({ onLogout }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-ho-cream">
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
+      <header className="bg-ho-forest">
+        <div className="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8 flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Hemlock & Oak Insights</h1>
-            <p className="text-sm text-gray-500">
+            <h1 className="text-2xl font-light tracking-wide text-white">Hemlock & Oak Insights</h1>
+            <p className="text-sm text-ho-tan mt-1">
               Last updated: {data?.timestamp ? formatTimestamp(data.timestamp) : 'Loading...'} PST
               {' '}&middot;{' '}
               <button
                 onClick={() => mutate()}
-                className="text-indigo-600 hover:text-indigo-800"
+                className="text-white hover:text-ho-bronze underline"
               >
                 Refresh
               </button>
@@ -38,7 +38,7 @@ export default function Dashboard({ onLogout }) {
           </div>
           <button
             onClick={onLogout}
-            className="text-sm text-gray-500 hover:text-gray-700"
+            className="text-sm text-ho-tan hover:text-white px-4 py-2 border border-ho-tan hover:border-white transition-colors"
           >
             Sign Out
           </button>
@@ -48,27 +48,27 @@ export default function Dashboard({ onLogout }) {
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {isLoading && !data && (
           <div className="text-center py-12">
-            <div className="text-gray-500">Loading dashboard data...</div>
+            <div className="text-ho-charcoal">Loading dashboard data...</div>
           </div>
         )}
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <p className="text-red-600">Failed to load data. Please try again.</p>
+          <div className="bg-ho-burgundy/10 border border-ho-burgundy p-4 mb-6">
+            <p className="text-ho-burgundy">Failed to load data. Please try again.</p>
           </div>
         )}
 
         {data && (
           <>
             {/* Referral Program Section */}
-            <section className="mb-8">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <section className="mb-10">
+              <h2 className="text-lg font-medium text-ho-charcoal mb-4 flex items-center">
                 Referral Program
                 <a
                   href="https://referral-web-app-k02k2.kinsta.app/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ml-2 text-sm font-normal text-indigo-600 hover:text-indigo-800"
+                  className="ml-3 text-sm font-normal text-ho-forest hover:text-ho-bronze transition-colors"
                 >
                   Open Dashboard →
                 </a>
@@ -77,8 +77,8 @@ export default function Dashboard({ onLogout }) {
             </section>
 
             {/* Webhook Stats Section */}
-            <section className="mb-8">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Processing</h2>
+            <section className="mb-10">
+              <h2 className="text-lg font-medium text-ho-charcoal mb-4">Order Processing</h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <WebhookStats
                   title="Address Issues"
@@ -113,8 +113,8 @@ export default function Dashboard({ onLogout }) {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t mt-8">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+      <footer className="bg-ho-forest mt-10">
+        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 text-center text-sm text-ho-tan">
           Auto-refreshes every 30 seconds
         </div>
       </footer>

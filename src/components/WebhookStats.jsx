@@ -1,10 +1,10 @@
-export default function WebhookStats({ title, data, colorScheme = 'indigo', dashboardUrl }) {
+export default function WebhookStats({ title, data, colorScheme = 'forest', dashboardUrl }) {
   if (data?.error) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-sm font-medium text-gray-900 mb-4">{title}</h3>
-        <div className="bg-red-50 border border-red-200 rounded p-3">
-          <p className="text-red-600 text-sm">Failed to load: {data.error}</p>
+      <div className="bg-white shadow-sm p-6">
+        <h3 className="text-sm font-medium text-ho-charcoal mb-4">{title}</h3>
+        <div className="bg-ho-burgundy/10 border border-ho-burgundy p-3">
+          <p className="text-ho-burgundy text-sm">Failed to load: {data.error}</p>
         </div>
       </div>
     )
@@ -12,35 +12,35 @@ export default function WebhookStats({ title, data, colorScheme = 'indigo', dash
 
   if (!data) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-sm font-medium text-gray-900 mb-4">{title}</h3>
-        <p className="text-gray-500 text-sm">No data available</p>
+      <div className="bg-white shadow-sm p-6">
+        <h3 className="text-sm font-medium text-ho-charcoal mb-4">{title}</h3>
+        <p className="text-ho-charcoal/60 text-sm">No data available</p>
       </div>
     )
   }
 
   const colors = {
     amber: {
-      pending: 'bg-amber-100 text-amber-700',
-      completed: 'bg-green-100 text-green-700',
-      failed: 'bg-red-100 text-red-700',
-      accent: 'text-amber-600'
+      pending: 'bg-ho-bronze/20 text-ho-bronze',
+      completed: 'bg-ho-forest/20 text-ho-forest',
+      failed: 'bg-ho-burgundy/20 text-ho-burgundy',
+      accent: 'text-ho-bronze'
     },
     purple: {
-      pending: 'bg-purple-100 text-purple-700',
-      completed: 'bg-green-100 text-green-700',
-      failed: 'bg-red-100 text-red-700',
-      accent: 'text-purple-600'
+      pending: 'bg-ho-burgundy/20 text-ho-burgundy',
+      completed: 'bg-ho-forest/20 text-ho-forest',
+      failed: 'bg-ho-burgundy/20 text-ho-burgundy',
+      accent: 'text-ho-burgundy'
     },
-    indigo: {
-      pending: 'bg-indigo-100 text-indigo-700',
-      completed: 'bg-green-100 text-green-700',
-      failed: 'bg-red-100 text-red-700',
-      accent: 'text-indigo-600'
+    forest: {
+      pending: 'bg-ho-tan text-ho-charcoal',
+      completed: 'bg-ho-forest/20 text-ho-forest',
+      failed: 'bg-ho-burgundy/20 text-ho-burgundy',
+      accent: 'text-ho-forest'
     }
   }
 
-  const colorSet = colors[colorScheme] || colors.indigo
+  const colorSet = colors[colorScheme] || colors.forest
 
   // Handle different data structures
   const stats = data.stats || {}
@@ -53,15 +53,15 @@ export default function WebhookStats({ title, data, colorScheme = 'indigo', dash
   const isCustomizationWebhook = stats.pending !== undefined && data.byTagType !== undefined
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-sm font-medium text-gray-900 mb-4">
+    <div className="bg-white shadow-sm p-6">
+      <h3 className="text-sm font-medium text-ho-charcoal mb-4">
         {title}
         {dashboardUrl && (
           <a
             href={dashboardUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="ml-2 text-xs font-normal text-indigo-600 hover:text-indigo-800"
+            className="ml-2 text-xs font-normal text-ho-forest hover:text-ho-bronze transition-colors"
           >
             Open →
           </a>
@@ -72,7 +72,7 @@ export default function WebhookStats({ title, data, colorScheme = 'indigo', dash
         <div className="space-y-4">
           {/* Pre-orders */}
           <div>
-            <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Pre-orders</div>
+            <div className="text-xs text-ho-charcoal/60 uppercase tracking-wider mb-2">Pre-orders</div>
             <div className="flex gap-2">
               <span className={`px-2 py-1 rounded text-xs font-medium ${colorSet.pending}`}>
                 {stats.preorder?.pending || 0} pending
@@ -88,7 +88,7 @@ export default function WebhookStats({ title, data, colorScheme = 'indigo', dash
 
           {/* Address Issues */}
           <div>
-            <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Address Issues</div>
+            <div className="text-xs text-ho-charcoal/60 uppercase tracking-wider mb-2">Address Issues</div>
             <div className="flex gap-2">
               <span className={`px-2 py-1 rounded text-xs font-medium ${colorSet.pending}`}>
                 {stats.address_issue?.pending || 0} pending
@@ -104,7 +104,7 @@ export default function WebhookStats({ title, data, colorScheme = 'indigo', dash
 
           {/* Address Confirmed */}
           <div>
-            <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Address Confirmed</div>
+            <div className="text-xs text-ho-charcoal/60 uppercase tracking-wider mb-2">Address Confirmed</div>
             <div className="flex gap-2">
               <span className={`px-2 py-1 rounded text-xs font-medium ${colorSet.pending}`}>
                 {stats.address_confirmed?.pending || 0} pending
@@ -124,7 +124,7 @@ export default function WebhookStats({ title, data, colorScheme = 'indigo', dash
         <div className="space-y-4">
           {/* Overall Stats */}
           <div>
-            <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Overall</div>
+            <div className="text-xs text-ho-charcoal/60 uppercase tracking-wider mb-2">Overall</div>
             <div className="flex gap-2">
               <span className={`px-2 py-1 rounded text-xs font-medium ${colorSet.pending}`}>
                 {stats.pending || 0} pending
@@ -140,7 +140,7 @@ export default function WebhookStats({ title, data, colorScheme = 'indigo', dash
 
           {/* By Tag Type */}
           <div>
-            <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Charms</div>
+            <div className="text-xs text-ho-charcoal/60 uppercase tracking-wider mb-2">Charms</div>
             <div className="flex gap-2">
               <span className={`px-2 py-1 rounded text-xs font-medium ${colorSet.pending}`}>
                 {byTagType.charm?.pending || 0} pending
@@ -152,7 +152,7 @@ export default function WebhookStats({ title, data, colorScheme = 'indigo', dash
           </div>
 
           <div>
-            <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Customizations</div>
+            <div className="text-xs text-ho-charcoal/60 uppercase tracking-wider mb-2">Customizations</div>
             <div className="flex gap-2">
               <span className={`px-2 py-1 rounded text-xs font-medium ${colorSet.pending}`}>
                 {byTagType.customization?.pending || 0} pending
