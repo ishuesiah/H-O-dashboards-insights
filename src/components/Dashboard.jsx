@@ -65,7 +65,7 @@ export default function Dashboard({ onLogout }) {
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Referral Program
                 <a
-                  href="https://referral-program-448vr.kinsta.app/"
+                  href="https://referral-web-app-k02k2.kinsta.app/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="ml-2 text-sm font-normal text-indigo-600 hover:text-indigo-800"

@@ -1,4 +1,5 @@
 import StatCard from './StatCard'
+import ReferralInsights from './ReferralInsights'
 
 export default function ReferralStats({ data }) {
   if (data?.error) {
@@ -17,8 +18,7 @@ export default function ReferralStats({ data }) {
     )
   }
 
-  const { stats, recentSignups, recentActivity } = data
-  const tiers = stats.tiers || {}
+  const { stats, recentActivity } = data
 
   return (
     <div className="space-y-6">
@@ -48,67 +48,9 @@ export default function ReferralStats({ data }) {
         />
       </div>
 
-      {/* Tier Breakdown */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-sm font-medium text-gray-900 mb-4">Users by Tier</h3>
-        <div className="grid grid-cols-4 gap-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-amber-700">{tiers.Bronze || 0}</div>
-            <div className="text-xs text-gray-500">Bronze</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-gray-400">{tiers.Silver || 0}</div>
-            <div className="text-xs text-gray-500">Silver</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-yellow-500">{tiers.Gold || 0}</div>
-            <div className="text-xs text-gray-500">Gold</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-purple-600">{tiers.VIP || 0}</div>
-            <div className="text-xs text-gray-500">VIP</div>
-          </div>
-        </div>
-      </div>
+      {/* Program Insights */}
+      <ReferralInsights stats={stats} recentActivity={recentActivity} />
 
-      {/* Recent Activity */}
-      {recentActivity && recentActivity.length > 0 && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-sm font-medium text-gray-900 mb-4">Activity (Last 7 Days)</h3>
-          <div className="space-y-2">
-            {recentActivity.slice(0, 5).map((activity, idx) => (
-              <div key={idx} className="flex justify-between items-center text-sm">
-                <span className="text-gray-600">{activity.action_type.replace(/_/g, ' ')}</span>
-                <span className="text-gray-900 font-medium">
-                  {activity.count} actions ({activity.total_points?.toLocaleString() || 0} pts)
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Recent Signups */}
-      {recentSignups && recentSignups.length > 0 && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-sm font-medium text-gray-900 mb-4">Recent Signups</h3>
-          <div className="space-y-2">
-            {recentSignups.slice(0, 5).map((user, idx) => (
-              <div key={idx} className="flex justify-between items-center text-sm">
-                <span className="text-gray-600">{user.firstName} ({user.email})</span>
-                <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                  user.tier === 'VIP' ? 'bg-purple-100 text-purple-700' :
-                  user.tier === 'Gold' ? 'bg-yellow-100 text-yellow-700' :
-                  user.tier === 'Silver' ? 'bg-gray-100 text-gray-700' :
-                  'bg-amber-100 text-amber-700'
-                }`}>
-                  {user.tier}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 }
