@@ -26,12 +26,17 @@ export default function ReferralInsights({ stats, recentActivity }) {
 
   const tiers = stats?.tiers || {}
 
+  // Helper to get tier value (handles both lowercase and capitalized keys)
+  const getTierValue = (name) => {
+    return tiers[name] || tiers[name.toLowerCase()] || 0
+  }
+
   // Prepare tier data for pie chart
   const tierData = [
-    { name: 'Bronze', value: tiers.Bronze || 0, color: TIER_COLORS.Bronze },
-    { name: 'Silver', value: tiers.Silver || 0, color: TIER_COLORS.Silver },
-    { name: 'Gold', value: tiers.Gold || 0, color: TIER_COLORS.Gold },
-    { name: 'VIP', value: tiers.VIP || 0, color: TIER_COLORS.VIP }
+    { name: 'Bronze', value: getTierValue('Bronze'), color: TIER_COLORS.Bronze },
+    { name: 'Silver', value: getTierValue('Silver'), color: TIER_COLORS.Silver },
+    { name: 'Gold', value: getTierValue('Gold'), color: TIER_COLORS.Gold },
+    { name: 'VIP', value: getTierValue('VIP') || getTierValue('vip'), color: TIER_COLORS.VIP }
   ].filter(t => t.value > 0)
 
   // Prepare activity data for bar chart
@@ -41,21 +46,23 @@ export default function ReferralInsights({ stats, recentActivity }) {
     points: a.total_points || 0
   }))
 
+  // Get total referrals (check multiple possible property names)
+  const totalReferrals = stats?.totalReferrals || stats?.successfulReferrals || stats?.referralCount || 0
+
   // Points & Referrals summary data
   const pointsReferralsData = [
     { name: 'Total Users', value: stats?.totalUsers || 0 },
-    { name: 'Total Referrals', value: stats?.totalReferrals || 0 },
+    { name: 'Total Referrals', value: totalReferrals },
     { name: 'Avg Points/User', value: stats?.totalUsers ? Math.round((stats?.totalPoints || 0) / stats.totalUsers) : 0 }
   ]
 
   // Conversion funnel data
   const totalUsers = stats?.totalUsers || 0
-  const usersWithReferrals = Math.round(totalUsers * 0.3) // Estimate: 30% made referrals
-  const successfulReferrals = stats?.totalReferrals || 0
+  const usersWithReferrals = stats?.usersWithReferrals || stats?.referrers || Math.round(totalUsers * 0.3)
   const conversionData = [
     { stage: 'Total Users', value: totalUsers, fill: '#6366f1' },
     { stage: 'Made Referrals', value: usersWithReferrals, fill: '#8b5cf6' },
-    { stage: 'Successful Referrals', value: successfulReferrals, fill: '#10b981' }
+    { stage: 'Successful Referrals', value: totalReferrals, fill: '#10b981' }
   ]
 
   // Weekly trends (simulated from activity data)
@@ -164,7 +171,7 @@ export default function ReferralInsights({ stats, recentActivity }) {
             })}
             <div className="mt-4 p-4 bg-blue-50 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>Conversion Rate:</strong> {totalUsers > 0 ? ((successfulReferrals / totalUsers) * 100).toFixed(1) : 0}% of users have successful referrals
+                <strong>Conversion Rate:</strong> {totalUsers > 0 ? ((totalReferrals / totalUsers) * 100).toFixed(1) : 0}% of users have successful referrals
               </p>
             </div>
           </div>
