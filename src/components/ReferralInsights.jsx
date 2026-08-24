@@ -15,10 +15,10 @@ const TIER_COLORS = {
 
 const TABS = [
   { id: 'tiers', label: 'Tier Distribution' },
-  { id: 'activity', label: 'Activity Breakdown' },
+  { id: 'activity', label: 'Activity (Last 7 Days)' },
   { id: 'points', label: 'Points & Referrals' },
   { id: 'conversion', label: 'Conversion Funnel' },
-  { id: 'trends', label: 'Weekly Trends' }
+  { id: 'trends', label: 'Daily Trends (7 Days)' }
 ]
 
 export default function ReferralInsights({ stats, recentActivity, trends }) {
