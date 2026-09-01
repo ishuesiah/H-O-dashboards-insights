@@ -18,6 +18,14 @@ export function useAllStats() {
   })
 }
 
+export function useTrendPeople(enabled) {
+  return useSWR(enabled ? '/api/stats/trend-people' : null, fetcher, {
+    revalidateOnFocus: false,
+    dedupingInterval: 60000,
+    errorRetryCount: 2
+  })
+}
+
 export function useAuthCheck() {
   return useSWR('/api/auth/check', fetcher, {
     revalidateOnFocus: false,

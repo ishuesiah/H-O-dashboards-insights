@@ -5,6 +5,7 @@ import {
   LineChart, Line, AreaChart, Area,
   CartesianGrid
 } from 'recharts'
+import { useTrendPeople } from '../hooks/useStats'
 
 // Hemlock & Oak brand colors
 const HO_COLORS = {
@@ -33,6 +34,12 @@ const TABS = [
 
 export default function ReferralInsights({ stats, recentActivity, trends }) {
   const [activeTab, setActiveTab] = useState('tiers')
+  const [selectedTrendKey, setSelectedTrendKey] = useState(null) // 'signups' | 'referrals' | null
+  const {
+    data: peopleData,
+    error: peopleError,
+    isLoading: peopleLoading
+  } = useTrendPeople(activeTab === 'trends' && selectedTrendKey !== null)
 
   const tiers = stats?.tiers || {}
 
@@ -79,12 +86,21 @@ export default function ReferralInsights({ stats, recentActivity, trends }) {
   const trendsData = (trends || []).map(day => {
     const date = new Date(day.date)
     return {
+      date: day.date, // raw 'YYYY-MM-DD' key, used to look up drill-down people lists
       name: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
       signups: day.signups || 0,
       referrals: day.referrals || 0,
       points: day.points || 0
     }
   })
+
+  const handleLegendClick = (item) => {
+    const key = item?.dataKey ?? item?.payload?.dataKey
+      ?? ({ Signups: 'signups', Referrals: 'referrals' }[item?.value])
+    if (key === 'signups' || key === 'referrals') {
+      setSelectedTrendKey(prev => (prev === key ? null : key))
+    }
+  }
 
   const renderChart = () => {
     switch (activeTab) {
@@ -202,20 +218,98 @@ export default function ReferralInsights({ stats, recentActivity, trends }) {
 
       case 'trends':
         return (
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={trendsData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Area type="monotone" dataKey="signups" name="Signups" stroke={HO_COLORS.forest} fill={`${HO_COLORS.forest}40`} />
-                <Area type="monotone" dataKey="referrals" name="Referrals" stroke={HO_COLORS.bronze} fill={`${HO_COLORS.bronze}40`} />
-              </AreaChart>
-            </ResponsiveContainer>
-{trendsData.length === 0 && (
-              <p className="text-xs text-ho-charcoal/50 text-center mt-2">No trend data available</p>
+          <div>
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={trendsData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend wrapperStyle={{ cursor: 'pointer' }} onClick={handleLegendClick} />
+                  <Area type="monotone" dataKey="signups" name="Signups" stroke={HO_COLORS.forest} fill={`${HO_COLORS.forest}40`} />
+                  <Area type="monotone" dataKey="referrals" name="Referrals" stroke={HO_COLORS.bronze} fill={`${HO_COLORS.bronze}40`} />
+                </AreaChart>
+              </ResponsiveContainer>
+              {trendsData.length === 0 && (
+                <p className="text-xs text-ho-charcoal/50 text-center mt-2">No trend data available</p>
+              )}
+            </div>
+            {!selectedTrendKey && trendsData.length > 0 && (
+              <p className="text-xs text-ho-charcoal/40 text-center mt-1">
+                Click "Signups" or "Referrals" in the legend to see who they are
+              </p>
+            )}
+            {selectedTrendKey && (
+              <div className="mt-4 border border-ho-tan">
+                <div className="px-4 py-2 bg-ho-cream border-b border-ho-tan flex justify-between items-center">
+                  <span className="text-xs font-medium text-ho-charcoal/60 uppercase tracking-wider">
+                    {selectedTrendKey === 'signups' ? 'Signups' : 'Referrals'} — Last 7 Days
+                  </span>
+                  <button
+                    onClick={() => setSelectedTrendKey(null)}
+                    className="text-xs text-ho-charcoal/60 hover:text-ho-charcoal"
+                  >
+                    Close
+                  </button>
+                </div>
+                <div className="max-h-80 overflow-y-auto divide-y divide-ho-tan/50">
+                  {peopleLoading && (
+                    <div className="px-4 py-8 text-center text-sm text-ho-charcoal/60">Loading...</div>
+                  )}
+                  {peopleError && (
+                    <div className="px-4 py-8 text-center text-sm text-ho-burgundy">
+                      Failed to load the list. Please try again.
+                    </div>
+                  )}
+                  {peopleData && trendsData.map(day => {
+                    const entries = peopleData[selectedTrendKey]?.[day.date] || []
+                    return (
+                      <div key={day.date}>
+                        <div className="px-4 py-1.5 bg-ho-cream/60 text-xs font-medium text-ho-charcoal sticky top-0">
+                          {day.name} <span className="text-ho-charcoal/50">({entries.length})</span>
+                        </div>
+                        {entries.length === 0 ? (
+                          <div className="px-4 py-2 text-xs text-ho-charcoal/40">
+                            No {selectedTrendKey} this day
+                          </div>
+                        ) : entries.map((p, i) => (
+                          <div key={i} className="px-4 py-2 text-sm text-ho-charcoal hover:bg-ho-cream/50">
+                            {selectedTrendKey === 'signups' ? (
+                              <>
+                                <span className="font-medium">{`${p.firstName || ''} ${p.lastName || ''}`.trim() || 'Unknown'}</span>
+                                <span className="text-ho-charcoal/60"> ({p.email})</span>
+                                {p.wasReferred && (
+                                  <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-ho-bronze/20 text-ho-bronze">referred</span>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                <span className="font-medium">{p.referrerName || 'Unknown'}</span>
+                                {' referred '}
+                                <span className="font-medium">{p.referredName || 'someone'}</span>
+                                {p.referredEmail && (
+                                  <span className="text-ho-charcoal/60"> ({p.referredEmail})</span>
+                                )}
+                                {' — '}
+                                <span className="text-ho-charcoal/60">
+                                  {p.bonusType === 'first_purchase' ? 'first purchase bonus' : 'signup bonus'},
+                                  {' '}+{(p.points || 0).toLocaleString()} pts
+                                </span>
+                              </>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  })}
+                  {peopleData?.truncated && (
+                    <div className="px-4 py-2 text-xs text-ho-charcoal/40 text-center">
+                      List truncated at 500 entries
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
           </div>
         )
@@ -235,7 +329,10 @@ export default function ReferralInsights({ stats, recentActivity, trends }) {
           {TABS.map(tab => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => {
+                setActiveTab(tab.id)
+                setSelectedTrendKey(null)
+              }}
               className={`whitespace-nowrap py-2 px-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === tab.id
                   ? 'border-ho-forest text-ho-forest'
