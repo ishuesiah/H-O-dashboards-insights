@@ -13,11 +13,6 @@ function App() {
     }
   }, [authData])
 
-  const handleLoginSuccess = () => {
-    setIsAuthenticated(true)
-    mutate()
-  }
-
   const handleLogout = async () => {
     await fetch('/api/auth/logout', {
       method: 'POST',
@@ -36,7 +31,7 @@ function App() {
   }
 
   if (!isAuthenticated) {
-    return <LoginForm onSuccess={handleLoginSuccess} />
+    return <LoginForm />
   }
 
   return <Dashboard onLogout={handleLogout} />
