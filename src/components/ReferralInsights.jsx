@@ -6,9 +6,14 @@ import {
   CartesianGrid
 } from 'recharts'
 import { useTrendPeople } from '../hooks/useStats'
+import RangeToggle from './RangeToggle'
+import PointsEconomyChart from './PointsEconomyChart'
+import RedemptionFunnel from './RedemptionFunnel'
+import LeaderboardTable from './LeaderboardTable'
+import FraudDetail from './FraudDetail'
 
 // Hemlock & Oak brand colors
-const HO_COLORS = {
+export const HO_COLORS = {
   forest: '#293e1c',
   bronze: '#a47738',
   burgundy: '#711d2f',
@@ -24,22 +29,33 @@ const TIER_COLORS = {
   VIP: HO_COLORS.burgundy
 }
 
-const TABS = [
+const getTabs = (days) => [
   { id: 'tiers', label: 'Tier Distribution' },
   { id: 'activity', label: 'Activity (Last 7 Days)' },
   { id: 'points', label: 'Points & Referrals' },
+  { id: 'economy', label: `Points Economy (${days}d)` },
+  { id: 'redemptions', label: `Redemptions (${days}d)` },
   { id: 'conversion', label: 'Conversion Funnel' },
-  { id: 'trends', label: 'Daily Trends (7 Days)' }
+  { id: 'trends', label: `Daily Trends (${days} Days)` },
+  { id: 'leaderboard', label: 'Top Referrers' },
+  { id: 'fraud', label: 'Fraud Review' }
 ]
 
-export default function ReferralInsights({ stats, recentActivity, trends }) {
+// Shared empty state for tabs backed by the insights endpoint
+const InsightsUnavailable = () => (
+  <div className="h-72 flex items-center justify-center">
+    <p className="text-sm text-ho-charcoal/50">Insights data unavailable. It will appear once the referral API is reachable.</p>
+  </div>
+)
+
+export default function ReferralInsights({ stats, recentActivity, trends, insights, days = 7, onDaysChange }) {
   const [activeTab, setActiveTab] = useState('tiers')
   const [selectedTrendKey, setSelectedTrendKey] = useState(null) // 'signups' | 'referrals' | null
   const {
     data: peopleData,
     error: peopleError,
     isLoading: peopleLoading
-  } = useTrendPeople(activeTab === 'trends' && selectedTrendKey !== null)
+  } = useTrendPeople(activeTab === 'trends' && selectedTrendKey !== null, days)
 
   const tiers = stats?.tiers || {}
 
@@ -186,7 +202,7 @@ export default function ReferralInsights({ stats, recentActivity, trends }) {
           return `${pct.toFixed(1)}%`
         }
         return (
-          <div className="h-72 flex flex-col justify-center space-y-4">
+          <div className="flex flex-col justify-center space-y-4 py-4">
             {conversionData.map((stage, i) => {
               const widthPercent = totalUsers > 0 ? (stage.value / totalUsers) * 100 : 0
               return (
@@ -213,6 +229,18 @@ export default function ReferralInsights({ stats, recentActivity, trends }) {
                 <strong>Conversion Rate:</strong> {totalUsers > 0 ? formatPercent((totalReferrals / totalUsers) * 100) : '0%'} of users have successful referrals
               </p>
             </div>
+            {insights?.conversion && (
+              <div className="p-4 bg-ho-bronze/10 border-l-4 border-ho-bronze">
+                <p className="text-sm text-ho-charcoal">
+                  <strong>Referred → Purchased:</strong>{' '}
+                  {insights.conversion.window.firstPurchaseBonuses.toLocaleString()} of{' '}
+                  {insights.conversion.window.referredSignups.toLocaleString()} referred signups made a first purchase
+                  in the last {days} days ({insights.conversion.window.conversionPct}%)
+                  {' '}&middot; all-time {insights.conversion.allTime.conversionPct}%
+                  {' '}({insights.conversion.allTime.firstPurchaseBonuses.toLocaleString()} of {insights.conversion.allTime.referredSignups.toLocaleString()})
+                </p>
+              </div>
+            )}
           </div>
         )
 
@@ -244,7 +272,7 @@ export default function ReferralInsights({ stats, recentActivity, trends }) {
               <div className="mt-4 border border-ho-tan">
                 <div className="px-4 py-2 bg-ho-cream border-b border-ho-tan flex justify-between items-center">
                   <span className="text-xs font-medium text-ho-charcoal/60 uppercase tracking-wider">
-                    {selectedTrendKey === 'signups' ? 'Signups' : 'Referrals'} — Last 7 Days
+                    {selectedTrendKey === 'signups' ? 'Signups' : 'Referrals'} — Last {days} Days
                   </span>
                   <button
                     onClick={() => setSelectedTrendKey(null)}
@@ -314,6 +342,22 @@ export default function ReferralInsights({ stats, recentActivity, trends }) {
           </div>
         )
 
+      case 'economy':
+        if (!insights?.economy) return <InsightsUnavailable />
+        return <PointsEconomyChart economy={insights.economy} expiring={insights.expiring} />
+
+      case 'redemptions':
+        if (!insights?.redemptionFunnel) return <InsightsUnavailable />
+        return <RedemptionFunnel funnel={insights.redemptionFunnel} days={days} />
+
+      case 'leaderboard':
+        if (!insights?.leaderboard) return <InsightsUnavailable />
+        return <LeaderboardTable leaderboard={insights.leaderboard} />
+
+      case 'fraud':
+        if (!insights?.fraudDetail) return <InsightsUnavailable />
+        return <FraudDetail fraudDetail={insights.fraudDetail} />
+
       default:
         return null
     }
@@ -321,12 +365,15 @@ export default function ReferralInsights({ stats, recentActivity, trends }) {
 
   return (
     <div className="bg-white shadow-sm p-6">
-      <h3 className="text-sm font-medium text-ho-charcoal mb-4">Program Insights</h3>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-sm font-medium text-ho-charcoal">Program Insights</h3>
+        {onDaysChange && <RangeToggle days={days} onDaysChange={onDaysChange} />}
+      </div>
 
       {/* Tabs */}
       <div className="border-b border-ho-tan mb-6">
         <nav className="flex space-x-4 overflow-x-auto" aria-label="Tabs">
-          {TABS.map(tab => (
+          {getTabs(days).map(tab => (
             <button
               key={tab.id}
               onClick={() => {

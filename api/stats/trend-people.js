@@ -15,8 +15,9 @@ export default async function handler(req, res) {
   }
 
   try {
+    const days = Math.min(Math.max(parseInt(req.query.days, 10) || 7, 1), 30);
     const r = await fetch(
-      `${process.env.REFERRAL_API_URL}/api/dashboard/trends/people?days=7`,
+      `${process.env.REFERRAL_API_URL}/api/dashboard/trends/people?days=${days}`,
       { headers: { 'X-Dashboard-Secret': process.env.REFERRAL_API_SECRET } }
     );
     if (!r.ok) throw new Error(`HTTP ${r.status}`);

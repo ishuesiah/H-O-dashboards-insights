@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useAllStats } from '../hooks/useStats'
 import StatCard from './StatCard'
 import ReferralStats from './ReferralStats'
@@ -5,7 +6,8 @@ import WebhookStats from './WebhookStats'
 import RecentOrdersTable from './RecentOrdersTable'
 
 export default function Dashboard({ onLogout }) {
-  const { data, error, isLoading, mutate } = useAllStats()
+  const [days, setDays] = useState(7)
+  const { data, error, isLoading, mutate } = useAllStats(days)
 
   const formatTimestamp = (ts) => {
     if (!ts) return 'N/A'
@@ -73,7 +75,7 @@ export default function Dashboard({ onLogout }) {
                   Open Dashboard →
                 </a>
               </h2>
-              <ReferralStats data={data.referral} />
+              <ReferralStats data={data.referral} days={days} onDaysChange={setDays} />
             </section>
 
             {/* Webhook Stats Section */}

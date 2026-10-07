@@ -1,7 +1,7 @@
 import StatCard from './StatCard'
 import ReferralInsights from './ReferralInsights'
 
-export default function ReferralStats({ data }) {
+export default function ReferralStats({ data, days, onDaysChange }) {
   if (data?.error) {
     return (
       <div className="bg-ho-burgundy/10 border border-ho-burgundy p-4">
@@ -49,7 +49,14 @@ export default function ReferralStats({ data }) {
       </div>
 
       {/* Program Insights */}
-      <ReferralInsights stats={stats} recentActivity={recentActivity} trends={trends} />
+      <ReferralInsights
+        stats={stats}
+        recentActivity={recentActivity}
+        trends={trends}
+        insights={data.insights || null}
+        days={days}
+        onDaysChange={onDaysChange}
+      />
 
     </div>
   )

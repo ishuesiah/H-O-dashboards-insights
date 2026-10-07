@@ -10,16 +10,16 @@ const fetcher = async (url) => {
   return res.json()
 }
 
-export function useAllStats() {
-  return useSWR('/api/stats/all', fetcher, {
+export function useAllStats(days = 7) {
+  return useSWR(`/api/stats/all?days=${days}`, fetcher, {
     refreshInterval: 30000, // Refresh every 30 seconds
     revalidateOnFocus: true,
     errorRetryCount: 3
   })
 }
 
-export function useTrendPeople(enabled) {
-  return useSWR(enabled ? '/api/stats/trend-people' : null, fetcher, {
+export function useTrendPeople(enabled, days = 7) {
+  return useSWR(enabled ? `/api/stats/trend-people?days=${days}` : null, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 60000,
     errorRetryCount: 2
